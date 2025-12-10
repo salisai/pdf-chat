@@ -1,36 +1,52 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
+# PDF-CHAT
+- Document-centric chat UI for PDFs: upload, view, and ask questions per document.
+- Dashboard with file list and upload zone.
+- Per-document viewer and chat sessions.
+- User authentication and storage with supabase. 
+- Pinecone embedding
+- Using Gemini
 
-First, run the development server:
+
+## The application flow
+### 2.1 User Uploads PDF
+1. Frontend sends file to a **backend API route** (`/api/upload`)
+2. File is stored in **Supabase storage** (or S3)
+3. Text is **extracted from PDF** using libraries like `pdf-parse`
+4. Document is **split into chunks**
+5. Chunks are converted into embeddings and stored in **Pinecone**
+
+### 2.2 User Opens PDF or Chat
+1. Backend fetches document metadata from **Supabase**
+2. For chat, when a question is asked:
+   1. Question is converted into an embedding (Gemini/LangChain)
+   2. Query **Pinecone** to retrieve relevant PDF chunks
+   3. Feed chunks + question to Gemini → generate answer
+   4. Answer returned to frontend and displayed in chat UI
+
+### 2.3 State & Sessions
+- Chat sessions are saved in Supabase (messages, timestamps)
+- Allows users to **resume conversations** later
+---
+
+## Techstack
+- Framework: `Next.js`, `Langchain` (App Router)
+- VectorDB : `Pinecone`
+- Database, storage and auth: `Supabase`
+- LLM : `Gemini`
+- Language: `TypeScript`
+- Styling: `Tailwind CSS` with `shadcn`
+- UI primitives: `Radix UI`
+- Motion: `framer-motion`
+- Icons & utilities: `lucide-react`, `clsx`
+- Tooling: `ESLint`, `PostCSS`
+
+## Quick start
+Install dependencies and run the development server:
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
