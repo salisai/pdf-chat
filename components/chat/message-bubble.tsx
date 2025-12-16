@@ -17,12 +17,12 @@ export function MessageBubble({ role, content }: MessageBubbleProps) {
             )}
 
             <div className={cn(
-                "max-w-[80%] rounded-2xl px-4 py-3 text-sm",
+                "max-w-[85%] rounded-lg px-4 py-3 text-sm leading-relaxed",
                 role === "user"
-                    ? "bg-primary text-primary-foreground rounded-br-sm"
+                    ? "bg-black text-white shadow-sm"
                     : role === "system"
-                        ? "bg-muted text-muted-foreground w-full text-center border-none shadow-none bg-transparent italic"
-                        : "bg-muted/50 text-foreground border rounded-bl-sm"
+                        ? "bg-transparent text-neutral-500 w-full text-center border-none shadow-none italic text-xs"
+                        : "bg-neutral-50 text-neutral-800 border border-neutral-100"
             )}>
                 {content}
             </div>

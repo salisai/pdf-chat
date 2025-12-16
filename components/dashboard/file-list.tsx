@@ -28,31 +28,31 @@ export function FileList() {
                 <div className="relative w-full overflow-auto">
                     <table className="w-full caption-bottom text-sm text-left">
                         <thead className="[&_tr]:border-b">
-                            <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
-                                <th className="h-12 px-4 align-middle font-medium text-muted-foreground w-[50%]">Name</th>
-                                <th className="h-12 px-4 align-middle font-medium text-muted-foreground">Date</th>
-                                <th className="h-12 px-4 align-middle font-medium text-muted-foreground">Size</th>
-                                <th className="h-12 px-4 align-middle font-medium text-muted-foreground">Status</th>
-                                <th className="h-12 px-4 align-middle font-medium text-muted-foreground text-right">Actions</th>
+                            <tr className="border-b border-neutral-100 transition-colors hover:bg-neutral-50/50">
+                                <th className="h-10 px-4 align-middle font-medium text-xs uppercase text-neutral-500 w-[50%]">Name</th>
+                                <th className="h-10 px-4 align-middle font-medium text-xs uppercase text-neutral-500">Date</th>
+                                <th className="h-10 px-4 align-middle font-medium text-xs uppercase text-neutral-500">Size</th>
+                                <th className="h-10 px-4 align-middle font-medium text-xs uppercase text-neutral-500">Status</th>
+                                <th className="h-10 px-4 align-middle font-medium text-xs uppercase text-neutral-500 text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="[&_tr:last-child]:border-0">
                             {mockFiles.map((file) => (
-                                <tr key={file.id} className="border-b transition-colors hover:bg-muted/50">
-                                    <td className="p-4 align-middle font-medium">
-                                        <div className="flex items-center gap-2">
-                                            <div className="rounded-md border p-1 bg-background">
-                                                <FileTextIcon className="h-4 w-4 text-muted-foreground" />
+                                <tr key={file.id} className="border-b border-neutral-100 transition-colors hover:bg-neutral-50/50">
+                                    <td className="p-4 align-middle font-medium text-neutral-900">
+                                        <div className="flex items-center gap-3">
+                                            <div className="rounded-md border border-neutral-200 p-1.5 bg-white shadow-sm">
+                                                <FileTextIcon className="h-4 w-4 text-black" />
                                             </div>
                                             <span>{file.name}</span>
                                         </div>
                                     </td>
-                                    <td className="p-4 align-middle text-muted-foreground">{file.date}</td>
-                                    <td className="p-4 align-middle text-muted-foreground">{file.size}</td>
+                                    <td className="p-4 align-middle text-neutral-500">{file.date}</td>
+                                    <td className="p-4 align-middle text-neutral-500">{file.size}</td>
                                     <td className="p-4 align-middle">
-                                        <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold ${file.status === "Ready"
-                                                ? "border-transparent bg-green-500/10 text-green-700"
-                                                : "border-transparent bg-blue-500/10 text-blue-700"
+                                        <span className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ${file.status === "Ready"
+                                            ? "bg-neutral-100 text-black ring-neutral-200"
+                                            : "bg-white text-neutral-500 ring-neutral-200"
                                             }`}>
                                             {file.status}
                                         </span>

@@ -1,6 +1,8 @@
 import { Navbar } from "@/components/landing/navbar";
 import { Hero } from "@/components/landing/hero";
 import { Footer } from "@/components/landing/footer";
+import { DemoSection } from "@/components/landing/demo-section";
+import { Features } from "@/components/landing/features";
 
 export default function Home() {
   return (
@@ -8,6 +10,8 @@ export default function Home() {
       <Navbar />
       <main className="flex-1">
         <Hero />
+        <DemoSection />
+        <Features />
       </main>
       <Footer />
     </div>

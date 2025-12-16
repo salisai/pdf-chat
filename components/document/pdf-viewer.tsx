@@ -33,7 +33,7 @@ export function PDFViewer() {
 
             {/* PDF Content Placeholder */}
             <div className="flex-1 overflow-auto p-8 flex justify-center">
-                <div className="bg-white shadow-lg w-full max-w-3xl min-h-[800px] rounded-sm p-12 text-gray-800">
+                <div className="bg-white shadow-md border border-neutral-100 w-full max-w-3xl min-h-[800px] rounded-sm p-12 text-gray-800">
                     <h1 className="text-4xl font-bold mb-8 text-black">Q4 Financial Report</h1>
                     <div className="space-y-6 text-justify">
                         <div className="h-4 bg-gray-100 rounded w-full" />
