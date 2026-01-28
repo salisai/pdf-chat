@@ -1,276 +1,137 @@
+"use client";
+
 import { Navbar } from "@/components/landing/navbar";
 import { Footer } from "@/components/landing/footer";
 import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
 import Link from "next/link";
-import {
-  ZapIcon,
-  ShieldIcon,
-  FileTextIcon,
-  MessageCircleIcon,
-  BarChartIcon,
-  SparklesIcon,
-  LockIcon,
-  CloudIcon,
-  Users2Icon,
-  SearchIcon,
-  TimerIcon,
+import { 
+  Zap, Shield, MessageSquare, Cloud, Users, 
+  BarChart, Sparkles, Lock, Search, Timer, ArrowRight, CheckCircle2 
 } from "lucide-react";
 
 export default function FeaturesPage() {
   const mainFeatures = [
-    {
-      icon: MessageCircleIcon,
-      title: "Chat with PDFs",
-      description:
-        "Ask questions about your documents and get instant answers. Our AI understands context and provides precise responses.",
-    },
-    {
-      icon: ZapIcon,
-      title: "Lightning Fast",
-      description:
-        "Get answers in seconds. Our optimized infrastructure ensures zero lag and blazing-fast performance.",
-    },
-    {
-      icon: ShieldIcon,
-      title: "Enterprise Security",
-      description:
-        "Bank-level encryption protects your documents. GDPR compliant and fully HIPAA certified.",
-    },
-    {
-      icon: CloudIcon,
-      title: "Cloud Storage",
-      description:
-        "Store unlimited documents with automatic backup. Access your files anywhere, anytime.",
-    },
-    {
-      icon: Users2Icon,
-      title: "Team Collaboration",
-      description:
-        "Share documents with teammates and collaborate in real-time. Role-based permissions for control.",
-    },
-    {
-      icon: BarChartIcon,
-      title: "Analytics & Insights",
-      description:
-        "Track usage patterns and document interactions. Get valuable insights from your data.",
-    },
-  ];
-
-  const advancedFeatures = [
-    {
-      icon: SearchIcon,
-      title: "Advanced Search",
-      description: "Full-text search across all your documents with smart filtering and sorting options.",
-    },
-    {
-      icon: SparklesIcon,
-      title: "Smart Summarization",
-      description: "Auto-summarize documents in seconds. Extract key points and insights instantly.",
-    },
-    {
-      icon: TimerIcon,
-      title: "Version History",
-      description: "Track changes and restore previous versions. Full audit trail for compliance.",
-    },
-    {
-      icon: FileTextIcon,
-      title: "Multi-Format Support",
-      description: "Works with PDF, DOCX, PPT, and more. Universal document support.",
-    },
-    {
-      icon: LockIcon,
-      title: "Access Control",
-      description: "Fine-grained permissions. Share with specific people or make documents public.",
-    },
+    { icon: MessageSquare, title: "Contextual Chat", desc: "Our AI doesn't just scan keywords; it understands the semantic relationships in your PDF." },
+    { icon: Zap, title: "Instant Indexing", desc: "Large documents are vectorized and ready for chat in under 3 seconds using our optimized Pinecone pipeline." },
+    { icon: Shield, title: "SOC2 Compliance", desc: "Enterprise-grade security is baked in. Your data is isolated and encrypted at rest." },
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-background selection:bg-primary/10 selection:text-primary">
+    <div className="min-h-screen bg-white">
       <Navbar />
-      <main className="flex-1">
-        {/* Hero Section */}
-        <section className="relative overflow-hidden bg-background pt-24 pb-16 md:pt-32 md:pb-24">
-          <div className="container mx-auto px-4 md:px-6 flex flex-col items-center text-center space-y-6 max-w-3xl">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-foreground">
-              Powerful Features for Your Documents
-            </h1>
-            <p className="text-lg md:text-xl text-muted-foreground">
-              Everything you need to chat with, understand, and manage your PDFs efficiently.
-            </p>
+      
+      <main>
+        {/* --- Hero Section --- */}
+        <section className="pt-32 pb-20 bg-neutral-50/50 border-b border-neutral-100">
+          <div className="container mx-auto px-6 text-center max-w-4xl">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+              <span className="text-xs font-bold uppercase tracking-[0.3em] text-neutral-400 mb-4 block">Capabilities</span>
+              <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-black mb-6">
+                Intelligence for your <span className="italic font-medium text-neutral-400">knowledge base.</span>
+              </h1>
+              <p className="text-xl text-neutral-500 leading-relaxed">
+                We've built a suite of tools that transform static PDFs into dynamic, searchable, and collaborative assets.
+              </p>
+            </motion.div>
           </div>
         </section>
 
-        {/* Main Features Grid */}
-        <section className="py-16 md:py-24 bg-background border-t">
-          <div className="container mx-auto px-4 md:px-6">
-            <div className="max-w-5xl mx-auto">
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
-                {mainFeatures.map((feature, idx) => {
-                  const Icon = feature.icon;
-                  return (
-                    <div key={idx} className="group p-6 rounded-lg border border-border hover:border-primary/50 transition-all duration-200 hover:bg-muted/30">
-                      <div className="mb-4 h-12 w-12 rounded-lg bg-muted flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-                        <Icon className="h-6 w-6 text-primary" />
+        {/* --- Core Features: Asymmetric Layout --- */}
+        <section className="py-24 container mx-auto px-6">
+          <div className="grid lg:grid-cols-3 gap-12 max-w-7xl mx-auto">
+            {mainFeatures.map((f, i) => (
+              <div key={i} className="group space-y-4 p-8 rounded-[32px] border border-transparent hover:border-neutral-200 hover:bg-neutral-50/50 transition-all duration-500">
+                <div className="h-12 w-12 rounded-2xl bg-black text-white flex items-center justify-center shadow-lg shadow-neutral-200 group-hover:scale-110 transition-transform">
+                  <f.icon className="h-5 w-5" />
+                </div>
+                <h3 className="text-xl font-bold text-black pt-4">{f.title}</h3>
+                <p className="text-neutral-500 leading-relaxed">{f.desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* --- Spotlight Feature: Semantic Search --- */}
+        <section className="py-24 bg-neutral-900 text-white overflow-hidden relative">
+          <div className="container mx-auto px-6 max-w-7xl">
+            <div className="grid lg:grid-cols-2 gap-16 items-center">
+              <div className="space-y-8">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-xs font-bold uppercase tracking-widest">
+                  <Search className="h-3 w-3" /> Advanced Search
+                </div>
+                <h2 className="text-4xl md:text-5xl font-bold leading-tight">
+                  Search by meaning, <br /> not just keywords.
+                </h2>
+                <p className="text-neutral-400 text-lg leading-relaxed">
+                  Powered by Pinecone vector indexes, our deep search understands nuances. 
+                  Searching for "Financial health" will find sections about "Revenue growth" 
+                  and "Profitability" automatically.
+                </p>
+                <ul className="space-y-4">
+                  {['Cross-document querying', 'Semantic clustering', 'Multi-language support'].map((item) => (
+                    <li key={item} className="flex items-center gap-3 text-sm font-medium text-neutral-300">
+                      <CheckCircle2 className="h-5 w-5 text-white" /> {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="relative">
+                <div className="aspect-square bg-gradient-to-br from-neutral-800 to-neutral-950 rounded-[40px] border border-white/10 shadow-2xl flex items-center justify-center p-12">
+                   {/* Simplified Vector Visual */}
+                   <div className="w-full space-y-4">
+                      <div className="h-3 w-full bg-white/5 rounded-full overflow-hidden">
+                        <motion.div initial={{ x: '-100%' }} animate={{ x: '100%' }} transition={{ duration: 3, repeat: Infinity, ease: "linear" }} className="h-full w-1/2 bg-white/20" />
                       </div>
-                      <h3 className="font-semibold text-lg text-foreground mb-2">
-                        {feature.title}
-                      </h3>
-                      <p className="text-sm text-muted-foreground leading-relaxed">
-                        {feature.description}
-                      </p>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Divider Section */}
-        <section className="py-12 bg-muted/20 border-t border-b">
-          <div className="container mx-auto px-4 md:px-6 text-center">
-            <p className="text-muted-foreground text-sm font-medium uppercase tracking-wider">
-              Advanced Capabilities
-            </p>
-          </div>
-        </section>
-
-        {/* Advanced Features Grid */}
-        <section className="py-16 md:py-24 bg-background">
-          <div className="container mx-auto px-4 md:px-6">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground text-center mb-12">
-              Advanced Features
-            </h2>
-            <div className="max-w-5xl mx-auto">
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {advancedFeatures.map((feature, idx) => {
-                  const Icon = feature.icon;
-                  return (
-                    <div key={idx} className="group p-6 rounded-lg border border-border hover:border-primary/50 transition-all duration-200 hover:bg-muted/30">
-                      <div className="mb-4 h-12 w-12 rounded-lg bg-muted flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-                        <Icon className="h-6 w-6 text-primary" />
-                      </div>
-                      <h3 className="font-semibold text-lg text-foreground mb-2">
-                        {feature.title}
-                      </h3>
-                      <p className="text-sm text-muted-foreground leading-relaxed">
-                        {feature.description}
-                      </p>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Comparison Section */}
-        <section className="py-16 md:py-24 bg-muted/20 border-t">
-          <div className="container mx-auto px-4 md:px-6">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground text-center mb-12">
-              Why Choose ChatPDF?
-            </h2>
-            <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-              <div className="text-center space-y-4">
-                <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
-                  <ZapIcon className="h-8 w-8 text-primary" />
-                </div>
-                <h3 className="font-bold text-lg text-foreground">Instant Results</h3>
-                <p className="text-sm text-muted-foreground">
-                  Get answers in seconds instead of hours of manual reading.
-                </p>
-              </div>
-
-              <div className="text-center space-y-4">
-                <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
-                  <ShieldIcon className="h-8 w-8 text-primary" />
-                </div>
-                <h3 className="font-bold text-lg text-foreground">100% Private</h3>
-                <p className="text-sm text-muted-foreground">
-                  Your documents never leave your account. Military-grade encryption.
-                </p>
-              </div>
-
-              <div className="text-center space-y-4">
-                <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
-                  <Users2Icon className="h-8 w-8 text-primary" />
-                </div>
-                <h3 className="font-bold text-lg text-foreground">Easy Sharing</h3>
-                <p className="text-sm text-muted-foreground">
-                  Collaborate with your team with granular permission controls.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Feature Timeline / Roadmap Preview */}
-        <section className="py-16 md:py-24 bg-background border-t">
-          <div className="container mx-auto px-4 md:px-6 max-w-3xl">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground text-center mb-12">
-              Coming Soon
-            </h2>
-            <div className="space-y-6">
-              <div className="flex gap-4 p-5 rounded-lg border border-border/50 hover:border-border transition-colors">
-                <div className="h-3 w-3 rounded-full bg-primary mt-2 flex-shrink-0" />
-                <div>
-                  <h3 className="font-semibold text-foreground mb-1">AI-Powered Insights</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Automatic extraction of key metrics, entities, and sentiment analysis.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex gap-4 p-5 rounded-lg border border-border/50 hover:border-border transition-colors">
-                <div className="h-3 w-3 rounded-full bg-primary mt-2 flex-shrink-0" />
-                <div>
-                  <h3 className="font-semibold text-foreground mb-1">Custom Models</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Fine-tune AI models on your specific use cases and domains.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex gap-4 p-5 rounded-lg border border-border/50 hover:border-border transition-colors">
-                <div className="h-3 w-3 rounded-full bg-primary mt-2 flex-shrink-0" />
-                <div>
-                  <h3 className="font-semibold text-foreground mb-1">Mobile Apps</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Native iOS and Android apps for on-the-go document access.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex gap-4 p-5 rounded-lg border border-border/50 hover:border-border transition-colors">
-                <div className="h-3 w-3 rounded-full bg-primary mt-2 flex-shrink-0" />
-                <div>
-                  <h3 className="font-semibold text-foreground mb-1">Advanced OCR</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Extract text from scanned documents and images with 99% accuracy.
-                  </p>
+                      <div className="h-3 w-3/4 bg-white/5 rounded-full" />
+                      <div className="h-3 w-5/6 bg-white/5 rounded-full" />
+                   </div>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* CTA Section */}
-        <section className="py-16 md:py-24 bg-muted/20 border-t">
-          <div className="container mx-auto px-4 md:px-6 max-w-3xl text-center">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-6">
-              Experience All Features Today
-            </h2>
-            <p className="text-lg text-muted-foreground mb-8">
-              Start free and explore every feature. No credit card required.
-            </p>
-            <Link href="/signup">
-              <Button size="lg" className="h-12 px-8 text-base">
-                Get Started Free
-              </Button>
-            </Link>
+        {/* --- The Roadmap: Sleek Timeline --- */}
+        <section className="py-32 bg-white">
+          <div className="container mx-auto px-6 max-w-3xl">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl font-bold italic tracking-tight mb-2">The Roadmap</h2>
+              <p className="text-neutral-500 font-medium uppercase text-xs tracking-[0.2em]">What's coming next</p>
+            </div>
+            
+            <div className="relative border-l border-neutral-100 ml-4 space-y-12 pb-8">
+              {[
+                { title: "AI-Powered Insights", status: "Q1 2026", desc: "Automatic extraction of key metrics and sentiment analysis across entire folders." },
+                { title: "Native Mobile Apps", status: "Q2 2026", desc: "Full-featured iOS and Android apps with offline PDF viewing capabilities." },
+                { title: "Custom LLM Fine-tuning", status: "In Research", desc: "Train ChatPDF on your specific legal or medical jargon for 99.9% accuracy." }
+              ].map((item, i) => (
+                <div key={i} className="relative pl-10 group">
+                  <div className="absolute left-[-5px] top-1.5 h-2.5 w-2.5 rounded-full bg-neutral-200 border-2 border-white group-hover:bg-black transition-colors" />
+                  <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">{item.status}</span>
+                  <h4 className="text-xl font-bold text-black mt-1">{item.title}</h4>
+                  <p className="text-neutral-500 text-sm mt-2 leading-relaxed">{item.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* --- Final CTA --- */}
+        <section className="pb-32 container mx-auto px-6">
+          <div className="bg-neutral-50 rounded-[48px] p-12 md:p-24 text-center border border-neutral-100 relative overflow-hidden">
+            <div className="relative z-10">
+              <h2 className="text-4xl md:text-6xl font-bold mb-8 tracking-tight">Ready to unlock <br /> your documents?</h2>
+              <Link href="/signup">
+                <Button size="lg" className="h-14 px-10 rounded-full bg-black text-white hover:bg-neutral-800 text-base font-bold shadow-xl shadow-neutral-200">
+                  Try for Free <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
           </div>
         </section>
       </main>
+      
       <Footer />
     </div>
   );
