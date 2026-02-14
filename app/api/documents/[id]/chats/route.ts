@@ -1,0 +1,58 @@
+import { NextRequest, NextResponse } from "next/server";
+import { getSupabaseServerClient, getUserIdFromHeaders } from "@/lib/supabase-server";
+
+export const dynamic = "force-dynamic";
+
+/**
+ * GET /api/documents/[id]/chats
+ * Get all chat sessions for a specific document
+ */
+export async function GET(
+    req: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const { id: documentId } = await params;
+        const supabase = getSupabaseServerClient();
+        const userId = getUserIdFromHeaders(req.headers);
+
+        if (!documentId) {
+            return NextResponse.json({ error: "Document ID is required" }, { status: 400 });
+        }
+
+        // 1. Verify document exists and user has permission
+        const { data: doc, error: docError } = await supabase
+            .from("documents")
+            .select("id, user_id")
+            .eq("id", documentId)
+            .single();
+
+        if (docError || !doc) {
+            return NextResponse.json({ error: "Document not found" }, { status: 404 });
+        }
+
+        // Check ownership
+        if (doc.user_id && doc.user_id !== userId) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+        }
+
+        // 2. Get all chats for this document
+        const { data: chats, error: chatsError } = await supabase
+            .from("chats")
+            .select("*")
+            .eq("document_id", documentId)
+            .order("created_at", { ascending: false });
+
+        if (chatsError) {
+            console.error("Chats fetch error:", chatsError);
+            return NextResponse.json({ error: "Failed to fetch chats" }, { status: 500 });
+        }
+
+        return NextResponse.json({
+            chats: chats || [],
+        });
+    } catch (error) {
+        console.error(error);
+        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    }
+}
