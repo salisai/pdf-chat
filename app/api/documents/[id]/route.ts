@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabaseServerClient, getUserIdFromHeaders } from "@/lib/supabase-server";
+import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
 /**
  * DELETE /api/documents/[id]
- * Delete a specific document and its associated data
  */
 export async function DELETE(
     req: NextRequest,
@@ -13,8 +12,11 @@ export async function DELETE(
 ) {
     try {
         const { id: documentId } = await params;
-        const supabase = getSupabaseServerClient();
-        const userId = getUserIdFromHeaders(req.headers);
+        const supabase = await createClient();
+        
+        // Get the authenticated user from Supabase
+        const { data: { user } } = await supabase.auth.getUser();
+        const userId = user?.id;
 
         if (!documentId) {
             return NextResponse.json({ error: "Document ID is required" }, { status: 400 });
@@ -31,8 +33,8 @@ export async function DELETE(
             return NextResponse.json({ error: "Document not found" }, { status: 404 });
         }
 
-        // Check ownership (allow if user_id matches or document is anonymous)
-        if (doc.user_id && doc.user_id !== userId) {
+        // Secure Ownership Check
+        if (doc.user_id !== userId) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
         }
 
@@ -43,17 +45,15 @@ export async function DELETE(
 
         if (storageError) {
             console.error("Storage deletion error:", storageError);
-            // Continue anyway - the file might already be deleted
         }
 
-        // 3. Delete document record (cascades to chats and messages)
+        // 3. Delete document record
         const { error: deleteError } = await supabase
             .from("documents")
             .delete()
             .eq("id", documentId);
 
         if (deleteError) {
-            console.error("Document deletion error:", deleteError);
             return NextResponse.json({ error: "Failed to delete document" }, { status: 500 });
         }
 
@@ -66,7 +66,6 @@ export async function DELETE(
 
 /**
  * GET /api/documents/[id]
- * Get a specific document's details
  */
 export async function GET(
     req: NextRequest,
@@ -74,8 +73,8 @@ export async function GET(
 ) {
     try {
         const { id: documentId } = await params;
-        const supabase = getSupabaseServerClient();
-        const userId = getUserIdFromHeaders(req.headers);
+        const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
 
         if (!documentId) {
             return NextResponse.json({ error: "Document ID is required" }, { status: 400 });
@@ -91,8 +90,8 @@ export async function GET(
             return NextResponse.json({ error: "Document not found" }, { status: 404 });
         }
 
-        // Check ownership
-        if (doc.user_id && doc.user_id !== userId) {
+        // Secure Ownership Check
+        if (doc.user_id !== user?.id) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
         }
 

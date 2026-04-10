@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabaseServerClient, getUserIdFromHeaders } from "@/lib/supabase-server";
+import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
@@ -13,14 +13,18 @@ export async function GET(
 ) {
     try {
         const { id: documentId } = await params;
-        const supabase = getSupabaseServerClient();
-        const userId = getUserIdFromHeaders(req.headers);
+        
+        // 1. Initialize the authenticated server client
+        const supabase = await createClient();
+        
+        // 2. Get the verified user from the session cookie
+        const { data: { user } } = await supabase.auth.getUser();
 
         if (!documentId) {
             return NextResponse.json({ error: "Document ID is required" }, { status: 400 });
         }
 
-        // 1. Verify document exists and user has permission
+        // 3. Verify document exists and user has permission
         const { data: doc, error: docError } = await supabase
             .from("documents")
             .select("id, user_id")
@@ -31,12 +35,12 @@ export async function GET(
             return NextResponse.json({ error: "Document not found" }, { status: 404 });
         }
 
-        // Check ownership
-        if (doc.user_id && doc.user_id !== userId) {
+        // Security: Ensure the document belongs to the logged-in user
+        if (doc.user_id !== user?.id) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
         }
 
-        // 2. Get all chats for this document
+        // 4. Get all chats for this document
         const { data: chats, error: chatsError } = await supabase
             .from("chats")
             .select("*")

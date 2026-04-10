@@ -1,7 +1,24 @@
-import { getCurrentUserId } from "./supabase-client";
-import type { Document, ChatResponse, DocumentsResponse } from "./database.types";
+import { createClient } from "@/lib/supabase/client";
+import type { Document, ChatResponse, DocumentsResponse } from "./types/database.types";
 
 const API_BASE = "/api";
+const supabase = createClient();
+
+/**
+ * Helper to get the current session and common headers.
+ */
+async function getAuthHeaders(extraHeaders: Record<string, string> = {}): Promise<HeadersInit> {
+    const { data: { session } } = await supabase.auth.getSession();
+    const userId = session?.user?.id;
+
+    const headers: Record<string, string> = { ...extraHeaders };
+    
+    if (userId) {
+        headers["x-user-id"] = userId;
+    }
+
+    return headers;
+}
 
 /**
  * Upload a PDF file to the server
@@ -12,15 +29,9 @@ export async function uploadDocument(
 ): Promise<{ id: string; status: string }> {
     const formData = new FormData();
     formData.append("file", file);
-    if (title) {
-        formData.append("title", title);
-    }
+    if (title) formData.append("title", title);
 
-    const userId = getCurrentUserId();
-    const headers: HeadersInit = {};
-    if (userId) {
-        headers["x-user-id"] = userId;
-    }
+    const headers = await getAuthHeaders();
 
     const response = await fetch(`${API_BASE}/upload`, {
         method: "POST",
@@ -40,11 +51,7 @@ export async function uploadDocument(
  * Get all documents for the current user
  */
 export async function getDocuments(): Promise<Document[]> {
-    const userId = getCurrentUserId();
-    const headers: HeadersInit = {};
-    if (userId) {
-        headers["x-user-id"] = userId;
-    }
+    const headers = await getAuthHeaders();
 
     const response = await fetch(`${API_BASE}/documents`, {
         headers,
@@ -55,20 +62,16 @@ export async function getDocuments(): Promise<Document[]> {
     }
 
     const data: DocumentsResponse = await response.json();
-    return data.documents as Document[];
+    return data.documents;
 }
 
 /**
  * Delete a document by ID
  */
 export async function deleteDocument(documentId: string): Promise<void> {
-    const userId = getCurrentUserId();
-    const headers: HeadersInit = {
+    const headers = await getAuthHeaders({
         "Content-Type": "application/json",
-    };
-    if (userId) {
-        headers["x-user-id"] = userId;
-    }
+    });
 
     const response = await fetch(`${API_BASE}/documents/${documentId}`, {
         method: "DELETE",
@@ -89,13 +92,9 @@ export async function sendChatMessage(
     question: string,
     chatId?: string | null
 ): Promise<ChatResponse> {
-    const userId = getCurrentUserId();
-    const headers: HeadersInit = {
+    const headers = await getAuthHeaders({
         "Content-Type": "application/json",
-    };
-    if (userId) {
-        headers["x-user-id"] = userId;
-    }
+    });
 
     const response = await fetch(`${API_BASE}/chat`, {
         method: "POST",
@@ -119,11 +118,7 @@ export async function sendChatMessage(
  * Get chat history for a specific chat session
  */
 export async function getChatHistory(chatId: string) {
-    const userId = getCurrentUserId();
-    const headers: HeadersInit = {};
-    if (userId) {
-        headers["x-user-id"] = userId;
-    }
+    const headers = await getAuthHeaders();
 
     const response = await fetch(`${API_BASE}/chat/${chatId}`, {
         headers,
@@ -140,11 +135,7 @@ export async function getChatHistory(chatId: string) {
  * Get all chats for a specific document
  */
 export async function getDocumentChats(documentId: string) {
-    const userId = getCurrentUserId();
-    const headers: HeadersInit = {};
-    if (userId) {
-        headers["x-user-id"] = userId;
-    }
+    const headers = await getAuthHeaders();
 
     const response = await fetch(`${API_BASE}/documents/${documentId}/chats`, {
         headers,

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { randomUUID } from "crypto";
-import { getSupabaseServerClient, getUserIdFromHeaders } from "@/lib/supabase-server";
+import { createClient } from "@/lib/supabase/server";
 import { ensureServerEnv } from "@/lib/env";
 import { extractTextFromPdf, ingestDocumentIntoPinecone } from "@/lib/rag";
 
@@ -11,9 +11,17 @@ export async function POST(req: NextRequest) {
   try {
     ensureServerEnv();
 
-    const supabase = getSupabaseServerClient();
-    const userId = getUserIdFromHeaders(req.headers);
+    // 1. Initialize authenticated server client
+    const supabase = await createClient();
+    
+    // 2. Get verified user
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    
+    if (authError || !user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
+    const userId = user.id;
     const formData = await req.formData();
     const file = formData.get("file");
     const title = String(formData.get("title") || "");
@@ -23,11 +31,12 @@ export async function POST(req: NextRequest) {
     }
 
     const fileBuffer = Buffer.from(await file.arrayBuffer());
-
     const documentId = randomUUID();
-    const storagePath = `${userId ?? "anonymous"}/${documentId}.pdf`;
+    
+    // Use the verified userId for the storage path
+    const storagePath = `${userId}/${documentId}.pdf`;
 
-    // 1. Store file in Supabase storage
+    // 3. Store file in Supabase storage
     const { error: storageError } = await supabase.storage
       .from("documents")
       .upload(storagePath, fileBuffer, {
@@ -40,7 +49,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Failed to store file" }, { status: 500 });
     }
 
-    // 2. Create document record (status: processing)
+    // 4. Create document record (status: processing)
     const { error: insertError } = await supabase.from("documents").insert({
       id: documentId,
       user_id: userId,
@@ -54,7 +63,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Failed to create document record" }, { status: 500 });
     }
 
-    // 3. Ingestion pipeline (synchronous for now)
+    // 5. Ingestion pipeline
+    // Note: Since this is synchronous, the request will hang until finished.
     const text = await extractTextFromPdf(fileBuffer);
 
     await ingestDocumentIntoPinecone({
@@ -63,6 +73,7 @@ export async function POST(req: NextRequest) {
       text,
     });
 
+    // 6. Update status to ready
     await supabase
       .from("documents")
       .update({ status: "ready" })
@@ -73,8 +84,7 @@ export async function POST(req: NextRequest) {
       status: "ready",
     });
   } catch (error) {
-    console.error(error);
+    console.error("Upload route error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
-
